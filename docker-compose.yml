@@ -1,0 +1,37 @@
+version: "3.9"
+services:
+  medods.auth.mongo:
+    image: mongo:4.4
+    restart: always
+    container_name: medods.auth.mongo
+
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE}
+
+    ports:
+      - 27017:27017
+
+    volumes:
+      - medods.mongo.auth:/data/db
+
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/${MONGODB_DATABASE} --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  medods.auth.mongo.ui:
+    image: mongo-express
+    restart: always
+    container_name: medods.auth.mongo.ui
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_USER}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_PASSWORD}
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@medods.auth.mongo:27017/
+
+volumes:
+  medods.mongo.auth:
