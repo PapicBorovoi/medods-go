@@ -25,19 +25,19 @@ func main() {
 	mux := http.NewServeMux()
 	handler.Handle(mux)
 
-	dbClient, dbErr := db.Connect()
+	err := db.Connect()
 
-	if dbErr != nil {
-		log.Fatal(dbErr)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 
 	fmt.Printf(`Server ready and listening on %s`, addr)
 
-	err := http.ListenAndServe(addr, mux)
+	err = http.ListenAndServe(addr, mux)
 
 	if err != nil {
-		db.Close(dbClient)
+		db.Close()
 		log.Fatal(err)
 	}
 }

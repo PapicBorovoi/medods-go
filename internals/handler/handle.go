@@ -43,7 +43,9 @@ func createToken(w http.ResponseWriter, r *http.Request) {
 
 	db.Delete(id);
 
-	err = db.Create(db.Auth{ID: id, RefreshToken: refreshToken});
+	auth := &db.Auth{ID: id, RefreshToken: refreshToken}
+
+	err = db.Create(auth);
 
 	if err != nil {
 		api.InternalErrorHandler(w)
@@ -95,7 +97,9 @@ func refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = db.Create(db.Auth{ID: id, RefreshToken: refreshToken})
+	auth := &db.Auth{ID: id, RefreshToken: refreshToken}
+
+	err = db.Create(auth)
 
 	if err != nil {
 		api.InternalErrorHandler(w)

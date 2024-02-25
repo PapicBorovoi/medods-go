@@ -12,7 +12,7 @@ import (
 
 var DbClient *mongo.Client = nil
 
-func Connect() (*mongo.Client, error) {
+func Connect() error {
 	fmt.Println("Database is connecting...")
 	var uri = "mongodb://" + os.Getenv("MONGODB_USER") + ":" + os.Getenv("MONGODB_PASSWORD") + 
 		"@localhost:27017"
@@ -20,7 +20,7 @@ func Connect() (*mongo.Client, error) {
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	var result bson.M
@@ -28,18 +28,18 @@ func Connect() (*mongo.Client, error) {
 	err = client.Database("admin").RunCommand(context.TODO(), bson.D{{"ping", 1}}).Decode(&result)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	fmt.Println("Database is connected")
 
 	DbClient = client
 
-	return client, nil
+	return nil
 }
 
-func Close(client *mongo.Client) error {
-	err := client.Disconnect(context.Background())
+func Close() error {
+	err := DbClient.Disconnect(context.Background())
 
 	if err != nil {
 		return err
